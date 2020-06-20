@@ -285,7 +285,9 @@ float3 Shade(inout Ray ray, RayHit hit)
                         float alpha = SmoothnessToPhongAlpha(hit.smoothness);
                         ray.direction = SampleHemisphere(dir, alpha);
                         //ray.direction = dir;
-                        ray.energy *= (1.0f / specAndRefractionChance) * hit.refraction;
+                        //ray.energy *= (1.0f / specAndRefractionChance) * hit.refraction;
+                        float f = (alpha + 2) / (alpha + 1);
+                        ray.energy *= (1.0f / specAndRefractionChance) * hit.refraction * f;
                     }
            
                 }

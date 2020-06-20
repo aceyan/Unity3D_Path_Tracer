@@ -67,19 +67,19 @@ public class PathTracingMaster : MonoBehaviour
 
             Color color = Random.ColorHSV();
             float chance = Random.value;
-            if (chance < 0.3f)
+            if (chance < 0.2f)
             {//opaque
-                bool metal = chance < 0.15f;
+                bool metal = chance < 0.1f;
                 sphere.albedo = metal ? Vector4.zero : new Vector4(color.r, color.g, color.b);
                 sphere.specular = metal ? new Vector4(color.r, color.g, color.b) : new Vector4(0.04f, 0.04f, 0.04f);
-                sphere.smoothness = Random.Range(0, 3);
+                sphere.smoothness = Random.Range(0, 4);
             }
             else
             {//translucent
-                sphere.albedo = new Vector3(color.r, color.g, color.b) * Random.Range(0, 0.3f);
+                sphere.albedo = new Vector3(color.r, color.g, color.b) * Random.Range(0, 0.2f);
                 sphere.specular =  new Vector3(color.r, color.g, color.b) ;
                 sphere.refraction = new Vector3(color.r, color.g, color.b);
-                sphere.smoothness = Random.Range(0, 3);
+                sphere.smoothness = Random.Range(1, 4);
                 //Color emission = Random.ColorHSV(0, 1, 0, 1, 3.0f, 8.0f);
                 //sphere.emission = new Vector3(emission.r, emission.g, emission.b);
             }
