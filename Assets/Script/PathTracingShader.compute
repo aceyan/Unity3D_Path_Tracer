@@ -286,8 +286,11 @@ float3 Shade(inout Ray ray, RayHit hit)
                         ray.direction = SampleHemisphere(dir, alpha);
                         //ray.direction = dir;
                         //ray.energy *= (1.0f / specAndRefractionChance) * hit.refraction;
+                        
                         float f = (alpha + 2) / (alpha + 1);
-                        ray.energy *= (1.0f / specAndRefractionChance) * hit.refraction * f;
+                        float refractionCoef = fromOutside ? sdot(-hit.normal, ray.direction, f) : sdot(hit.normal, ray.direction, f);
+                        ray.energy *= (1.0f / specAndRefractionChance) * hit.refraction * refractionCoef;
+
                     }
            
                 }
