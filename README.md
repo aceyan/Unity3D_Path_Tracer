@@ -11,11 +11,18 @@ Unity 2018.3.7f1 (win10 64-bit)
 4. Fuzzy glassy ball
 
 ## Principle:
-![DemoScreenShot](Screenshot/2.jpg)
+### BSDF = BRDF + BTDF
+![DemoScreenShot](Screenshot/2.png)   
+### BRDF and importance sampling
+#### Importance-Sampling Lambert
+#### Importance-Sampling Phong
+
+### BTDF and importance sampling
+#### Importance-Sampling Phong for refraction 
 
 
 ## Reference:
    
-
+https://www.scratchapixel.com/lessons/mathematics-physics-for-computer-graphics/monte-carlo-methods-in-practice/monte-carlo-methods
 [Reflection, Refraction (Transmission) and Fresnel](https://www.scratchapixel.com/lessons/3d-basic-rendering/introduction-to-shading/reflection-refraction-fresnel)   
 [Webgl中采用PBR的实时光线追踪](https://zhuanlan.zhihu.com/p/58692781)
