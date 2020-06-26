@@ -131,7 +131,8 @@ void IntersectSphere(Ray ray, inout RayHit bestHit, Sphere sphere)
     }
 }
 
-float3x3 GetTangentSpace(float3 normal)
+//return the roation matrix
+float3x3 GetTransformMatrix(float3 normal)
 {
     // Choose a helper vector for the cross product
     float3 helper = float3(1, 0, 0);
@@ -152,8 +153,8 @@ float3 SampleHemisphere(float3 normal, float alpha)
     float phi = 2 * PI * rand();
     float3 tangentSpaceDir = float3(cos(phi) * sinTheta, sin(phi) * sinTheta, cosTheta);
 
-    // Transform direction to world space
-    return mul(tangentSpaceDir, GetTangentSpace(normal));
+    // Transform direction to be centered around whatever noraml we need
+    return mul(tangentSpaceDir, GetTransformMatrix(normal));
 }
 
 
