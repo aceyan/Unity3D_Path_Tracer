@@ -234,16 +234,21 @@ float3 Shade(inout Ray ray, RayHit hit)
             hit.specular = max(1.0f - hit.albedo, hit.specular);
             float specAndRefractionChance = energy(hit.specular);
             float diffChance = energy(hit.albedo);
+            
+            bool fromOutside = dot(ray.direction, hit.normal) < 0;
+            float3 N = fromOutside ? hit.normal : -hit.normal;
+            float3 bias = N * 0.001f;
+            
             // Roulette-select the ray's path
             float roulette = rand();
             if (roulette < diffChance)
             {
                             
                     // Diffuse reflection
-                    ray.origin = hit.position + hit.normal * 0.001f;
+                    ray.origin = hit.position + bias;
                     //ray.direction = SampleHemisphere(hit.normal, 0.0f);
                     //ray.energy *= (1.0f / diffChance) * hit.albedo * sdot(hit.normal, ray.direction);
-                    ray.direction = SampleHemisphere(hit.normal, 1.0f);
+                    ray.direction = SampleHemisphere(N, 1.0f);
                     ray.energy *= (1.0f / diffChance) * hit.albedo;
                 
             }
@@ -253,48 +258,37 @@ float3 Shade(inout Ray ray, RayHit hit)
                 
                 float kr;
                 fresnel(ray.direction, hit.normal, 1.55, kr);
-                bool fromOutside = dot(ray.direction, hit.normal) < 0;
-                float3 bias = hit.normal * 0.001f;
+              
             
             
-                if (kr > 1)
-                { //total internal reflection
-               
-                    ray.origin = hit.position + bias;
-                    float alpha = SmoothnessToPhongAlpha(hit.smoothness);
-                    ray.direction = SampleHemisphere(reflect(ray.direction, hit.normal), alpha);
-                    //ray.direction = reflect(ray.direction, hit.normal);
-                    float f = (alpha + 2) / (alpha + 1);
-                    ray.energy *= (1.0f / specAndRefractionChance) * hit.specular * sdot(hit.normal, ray.direction, f);
-                }
-                else
-                {
+         
                     if (rand() < kr)
                     { //reflection
-                        ray.origin = hit.position + bias;
+                    ray.origin =  hit.position + bias;
                         float alpha = SmoothnessToPhongAlpha(hit.smoothness);
-                        ray.direction = SampleHemisphere(reflect(ray.direction, hit.normal), alpha);
+                    ray.direction = SampleHemisphere(N, alpha);
                         //ray.direction = reflect(ray.direction, hit.normal);
                         float f = (alpha + 2) / (alpha + 1);
-                        ray.energy *= (1.0f / specAndRefractionChance) * hit.specular * sdot(hit.normal, ray.direction, f);
-                    }
+                    float refractionCoef = sdot(N, ray.direction, f);
+                    ray.energy *= (1.0f / specAndRefractionChance) * hit.specular * refractionCoef;
+                }
                     else
                     {
                       //refraction
-                        float3 dir = fromOutside ? normalize(refract(ray.direction, hit.normal, 1 / 1.55)) : normalize(refract(ray.direction, -hit.normal, 1.55));
-                        ray.origin = fromOutside ? hit.position - bias : hit.position + bias;
+                        float3 dir = fromOutside ? normalize(refract(ray.direction, N, 1 / 1.55)) : normalize(refract(ray.direction, N, 1.55));
+                        ray.origin =  hit.position - bias;
                         float alpha = SmoothnessToPhongAlpha(hit.smoothness);
                         ray.direction = SampleHemisphere(dir, alpha);
                         //ray.direction = dir;
                         //ray.energy *= (1.0f / specAndRefractionChance) * hit.refraction;
                         
                         float f = (alpha + 2) / (alpha + 1);
-                        float refractionCoef = fromOutside ? sdot(-hit.normal, ray.direction, f) : sdot(hit.normal, ray.direction, f);
+                        float refractionCoef =  sdot(-N, ray.direction, f);
                         ray.energy *= (1.0f / specAndRefractionChance) * hit.refraction * refractionCoef;
 
                     }
            
-                }
+                
                 
             }
             else
